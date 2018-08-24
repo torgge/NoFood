@@ -73,7 +73,6 @@ exports.getById = async (repository, req, res) => {
                 message: 'O parametro Id precisa ser informado.'
             })
         }
-
     } catch (err) {
         console.log(`GetById com erro, motivo:`, err)
         res.status(500).send({
@@ -97,9 +96,6 @@ exports.delete = async (repository, req, res) => {
                 message: 'O parametro Id precisa ser informado.'
             })
         }
-
-
-
     } catch (err) {
         console.log(`Delete com erro, motivo:`, err)
         res.status(500).send({
