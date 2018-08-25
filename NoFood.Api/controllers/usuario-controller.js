@@ -1,36 +1,69 @@
 "use strict"
 
 const repository = require("../repositories/usuario-repository")
+const ctrlBase = require('../bin/base/controller-base')
+const validation = require('../bin/helpers/validation')
+const md5 = require('md5')
+
 const _repo = new repository()
+
 
 class usuarioController {
     constructor() {
-        // this.create = this.create.bind(this)
+
     }
 
     async get(req, res) {
-        let result = await _repo().getAll()
-        res.status(200).send(result)
+        ctrlBase.get(_repo, req, res)
     }
 
     async getById(req, res) {
-        let result = await _repo().getById(req.params.id, req.body)
-        res.status(200).send(result)
+        ctrlBase.getById(_repo, req, res)
     }
 
     async post(req, res) {
-        let result = await _repo().create(req.body)
-        res.status(201).send(result)
+        let _validationContract = new validation()
+
+        _validationContract.isRequired(req.body.nome, 'Informe seu nome')
+        _validationContract.isRequired(req.body.email, 'Informe seu email')
+        _validationContract.isEmail(req.body.email, 'O email informado é invalido')
+        _validationContract.isRequired(req.body.senha, 'A senha informada é inválida.')
+        _validationContract.isRequired(req.body.senhaConfirmacao, 'A senha de confirmação é obrigatória.')
+        _validationContract.isTrue(req.body.senha != req.body.senhaConfirmacao, 'A senha e a confirmação não são iguais.')
+
+        let usuarioIsEmailExists = await _repo.isEmailExists(req.body.email)
+        if (usuarioIsEmailExists) {
+            _validationContract.isTrue(usuarioIsEmailExists.nome != undefined, `O email: ${req.body.email} já existe.`)
+        }
+
+
+        //Criptografa Senha
+        req.body.senha = md5(req.body.senha)
+
+        ctrlBase.post(_repo, _validationContract, req, res)
     }
 
     async put(req, res) {
-        let result = await _repo().update(req.params.id, req.body)
-        res.status(202).send(result)
+        let _validationContract = new validation()
+
+        _validationContract.isRequired(req.body._id, 'Informe o Id do usuário que será alterado')
+        _validationContract.isRequired(req.body.nome, 'Informe seu nome')
+        _validationContract.isRequired(req.body.email, 'Informe seu email')
+        _validationContract.isEmail(req.body.email, 'O email informado é invalido')
+
+        let usuarioIsEmailExists = await _repo.isEmailExists(req.body.email)
+        if (usuarioIsEmailExists) {
+            _validationContract.isTrue(
+                (usuarioIsEmailExists.nome != undefined) &&
+                (usuarioIsEmailExists._id != req.params._id),
+                `O email: ${req.body.email} já existe.`
+            )
+        }
+        ctrlBase.put(_repo, _validationContract, req, res)
     }
 
     async delete(req, res) {
-        await _repo().delete(req.params.id)
-        res.status(204).send(`Usuario ${req.params.id} removido com sucesso!`)
+        ctrlBase.delete(_repo, req, res)
     }
 }
 

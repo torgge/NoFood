@@ -1,36 +1,33 @@
 "use strinct"
 
 require("../models/categoria-model")
-const mongoose = require("mongoose")
-const CategoriaModel = mongoose.model("Categoria")
+const base = require('../bin/base/repository-base')
 
 class categoriaRepositoy {
-  constructor() {}
 
-  async create(data) {
-    let categoria = new CategoriaModel(data)
-    let resultado = await categoria.save()
-    return resultado
-  }
+    constructor() {
+        this._base = new base('Categoria')
+    }
 
-  async update(id, data) {
-    await CategoriaModel.findByIdAndUpdate(id, { $set: data })
-    let resultado = await CategoriaModel.findById(id)
-    return resultado
-  }
+    async create(data) {
+        return await this_base.create(data)
+    }
 
-  async getById(id) {
-    let categoria = await CategoriaModel.findById(id)
-    return categoria
-  }
+    async update(id, data) {
+        return await this._base.update(id, data)
+    }
 
-  async getAll() {
-    return await CategoriaModel.find()
-  }
+    async getById(id) {
+        return await this._base.getById(id)
+    }
 
-  async delete(id) {
-    await CategoriaModel.findByIdAndRemove(id)
-  }
+    async getAll() {
+        return await this._base.getAll()
+    }
+
+    async delete(id) {
+        return await this._base.delete(id)
+    }
 }
 
 module.exports = categoriaRepositoy
