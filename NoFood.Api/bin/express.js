@@ -17,6 +17,7 @@ app.use(bodyParser.urlencoded({extended: false}))
 
 //Configura conexao com banco de dados.
 mongoose.connect(variables.Database.connection, {useNewUrlParser: true})
+mongoose.set('useFindAndModify', false)
 
 //Configurando as Rotas
 app.use('/api/categoria', categoriaRouter)

@@ -28,14 +28,14 @@ class usuarioController {
 
         _validationContract.isRequired(req.body.nome, 'Informe seu nome')
         _validationContract.isRequired(req.body.email, 'Informe seu email')
-        _validationContract.isEmail(req.body.email, 'O email informado é invalido')
-        _validationContract.isRequired(req.body.senha, 'A senha informada é iválida.')
-        _validationContract.isRequired(req.body.senhaConfirmacao, 'A senha de confirmação é obrigatória.')
-        _validationContract.isTrue(req.body.senha != req.body.senhaConfirmacao, 'A senha e a confirmação não são iguais.')
+        _validationContract.isEmail(req.body.email, 'O email informado ï¿½ invalido')
+        _validationContract.isRequired(req.body.senha, 'A senha informada ï¿½ ivï¿½lida.')
+        _validationContract.isRequired(req.body.senhaConfirmacao, 'A senha de confirmaï¿½ï¿½o ï¿½ obrigatï¿½ria.')
+        _validationContract.isTrue(req.body.senha != req.body.senhaConfirmacao, 'A senha e a confirmaï¿½ï¿½o nï¿½o sï¿½o iguais.')
 
         let usuarioIsEmailExists = await _repo.isEmailExists(req.body.email)
         if (usuarioIsEmailExists) {
-            _validationContract.isTrue(usuarioIsEmailExists.nome != undefined, `O email: ${req.body.email} já existe.`)
+            _validationContract.isTrue(usuarioIsEmailExists.nome != undefined, `O email: ${req.body.email} jï¿½ existe.`)
         }
 
 
@@ -48,7 +48,7 @@ class usuarioController {
     async put(req, res) {
         let _validationContract = new validation()
 
-        _validationContract.isRequired(req.body._id, 'Informe o Id do usuário que alterado')
+        _validationContract.isRequired(req.body._id, 'Informe o Id do usuï¿½rio que alterado')
         _validationContract.isRequired(req.body.nome, 'Informe seu nome')
         _validationContract.isRequired(req.body.email, 'Informe seu email')
         _validationContract.isEmail(req.body.email, 'O email informado Ã© invalido')
@@ -58,7 +58,7 @@ class usuarioController {
             _validationContract.isTrue(
                 (usuarioIsEmailExists.nome != undefined) &&
                 (usuarioIsEmailExists._id != req.params._id),
-                `O email: ${req.body.email} já existe.`
+                `O email: ${req.body.email} jï¿½ existe.`
             )
         }
         ctrlBase.put(_repo, _validationContract, req, res)
@@ -73,24 +73,29 @@ class usuarioController {
 
         _validationContract.isRequired(req.body.senha, 'Informe sua senha')
         _validationContract.isRequired(req.body.email, 'Informe seu email')
-        _validationContract.isEmail(req.body.email, 'Email Inválido')
+        _validationContract.isEmail(req.body.email, 'Email InvÃ¡lido')
 
-        if (_validationContract.isValid()) {
+        if (!_validationContract.isValid()) {
             res.status(400).send({
-                message: `Não foi possível efetuar o login`,
+                message: `NÃ£o foi possÃ­vel efetuar o login`,
                 validation: _validationContract.errors()
             })
             return
         }
-        let usuarioEncontrado = await _repo.authenticate(req.body.email, req.body.senha)
+
+        console.log(`acessando repo`)
+
+        let usuarioEncontrado = await _repo.authenticate(req.body.email, req.body.senha)        
+
+        console.log(`usuario encontrado...${usuarioEncontrado}`)
 
         if (usuarioEncontrado) {
-            res.staus(200).send({
+            res.status(200).send({
                 usuario: usuarioEncontrado,
                 token: jwt.sign({user: usuarioEncontrado}, variables.Security.secretkey)
             })
         } else {
-            res.staus(404).send({message: 'Usuario e Senha informado são inválidos'})
+            res.status(404).send({message: 'Usuario e Senha informado sÃ£o invÃ¡lidos'})
         }
     }
 }

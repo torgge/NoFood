@@ -17,7 +17,7 @@ class usuarioRepository {
 
     async authenticate(Email, Senha) {
         let _hashSenha = md5(Senha)
-        return await this._base._model.findOne({email: Email, senha: _hashSenha}, this._projection)
+        return await this._base._model.findOne({email: Email, senha: _hashSenha}, this._projection)        
     }
 
     async create(data) {
